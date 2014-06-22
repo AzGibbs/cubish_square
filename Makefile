@@ -3,7 +3,7 @@ CXXFLAGS = -g
 INCLUDES = -I$(HOME)/usr/include
 LDFLAGS = -L$(HOME)/usr/lib -L$(HOME)/usr/lib64
 LIBS = -lGL -lglfw3 -lGLEW -lm -lXrandr
-SOURCES = main.cpp
+SOURCES = cube.cpp main.cpp
 OBJECTS = $(patsubst %.cpp, tmp/%.o, $(SOURCES))
 
 all: tmp $(OBJECTS)
