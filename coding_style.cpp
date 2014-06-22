@@ -20,6 +20,7 @@ const int SUPER_CONSTANT = 10;
 class ClassName {
 /* first put public methods and variables, as they should be visible to user */
 public:
+    /* indentation is four whitespaces */
     ClassName();
     ~ClassName();
 
