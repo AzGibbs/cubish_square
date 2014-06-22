@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g
+CXXFLAGS = -g -std=c++0x
 INCLUDES = -I$(HOME)/usr/include
 LDFLAGS = -L$(HOME)/usr/lib -L$(HOME)/usr/lib64
 LIBS = -lGL -lglfw3 -lGLEW -lm -lXrandr

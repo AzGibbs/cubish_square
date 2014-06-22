@@ -1,8 +1,9 @@
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
 #include <GLFW/glfw3.h>
-
+#include "cube.hpp"
 
 static void error_callback(int error, const char *desc)
 {
@@ -40,6 +41,12 @@ int main(void)
     glfwMakeContextCurrent(window);
    
     /* general initialization code */ 
+    const Cube cube1 = Cube(0.0f, 0.0f, 1.0f);
+    const Cube cube2 = Cube(0.0f, 1.0f, 2.0f);
+    const Cube cube3 = Cube(2.0f, 0.0f, 1.0f);
+    const Cube cube4 = Cube(3.0f, 3.0f, 5.0f);
+    const std::vector<Cube> cubes = {cube1, cube2, cube3, cube4};
+    
 
     while (!glfwWindowShouldClose(window)) {
 
