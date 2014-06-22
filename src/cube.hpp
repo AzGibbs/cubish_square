@@ -1,3 +1,5 @@
+#ifndef CUBE_HPP
+#define CUBE_HPP
 
 class Cube {
 
@@ -7,3 +9,4 @@ public:
     
 };
 
+#endif
