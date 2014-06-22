@@ -4,10 +4,20 @@
 
 #include <GLFW/glfw3.h>
 #include "cube.hpp"
+#include "input.hpp"
 
 static void error_callback(int error, const char *desc)
 {
     std::cerr << desc << std::endl;
+}
+
+
+void get_key_callback(GLFWwindow *window, int key, int scancode,
+                      int action, int mods)
+{
+    /* TODO static, dynamic cast? */
+    Input *input = (Input *)glfwGetWindowUserPointer(window);
+    input->get_key_callback(key, scancode, action, mods);
 }
 
 
@@ -47,10 +57,13 @@ int main(void)
     const Cube cube4 = Cube(3.0f, 3.0f, 5.0f);
     const std::vector<Cube> cubes = {cube1, cube2, cube3, cube4};
     
+    Input input = Input();
+    glfwSetWindowUserPointer(window, (void *)&input);
+    glfwSetKeyCallback(window, get_key_callback); 
 
     while (!glfwWindowShouldClose(window)) {
 
-         
+        std::cout << input.return_key() << std::endl; 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
