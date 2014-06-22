@@ -1,3 +1,5 @@
+#ifndef CUBE_HPP
+#define CUBE_HPP
 
 class Cube {
 float points[4][3];
@@ -7,3 +9,4 @@ public:
     ~Cube();    
 };
 
+#endif
