@@ -2,8 +2,12 @@
 #include <iostream>
 #include <vector>
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include "cube.hpp"
+#include "renderer.hpp"
+
 
 static void error_callback(int error, const char *desc)
 {
@@ -39,18 +43,28 @@ int main(void)
     }
         
     glfwMakeContextCurrent(window);
+
+    /* initialize GLEW to load OpenGL extensions */
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK) {
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        std::cerr << "Failed to initialize GLEW" << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
    
     /* general initialization code */ 
-    const Cube cube1 = Cube(0.0f, 0.0f, 1.0f);
-    const Cube cube2 = Cube(0.0f, 1.0f, 2.0f);
-    const Cube cube3 = Cube(2.0f, 0.0f, 1.0f);
-    const Cube cube4 = Cube(3.0f, 3.0f, 5.0f);
+    const Cube cube1 = Cube(0.0f, 0.0f, 0.0f, 10.0f);
+    const Cube cube2 = Cube(0.0f, 10.0f, 0.0f, 20.0f);
+    const Cube cube3 = Cube(20.0f, 0.0f, 0.0f, 10.0f);
+    const Cube cube4 = Cube(30.0f, 30.0f, 0.0f, 50.0f);
     const std::vector<Cube> cubes = {cube1, cube2, cube3, cube4};
-    
+
+    Renderer renderer(width, height); 
 
     while (!glfwWindowShouldClose(window)) {
+        renderer.draw(cubes);        
 
-         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
