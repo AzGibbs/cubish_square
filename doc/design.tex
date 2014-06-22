@@ -1,0 +1,61 @@
+\documentclass{article}
+
+\begin{document}
+Design document for developed game with overall plan of modules of game.
+
+\section{Introduction}
+Game is 2D and based on cubes (technically squares). Main character is a cube with
+various properties and abilities.
+
+\section{Aim}
+Aim of this project is to improve C++ knowledge, software engineering and teamwork skills.
+This is short list of main programming features being practiced.
+
+\begin{itemize}
+    \item{OOP}
+    \item{Inheritance}
+    \item{STL}
+    \item{Templates}
+    \item{Exceptions}
+    \item{Namespaces}
+\end{itemize}
+
+\section{Ideas}
+Main character cube can equip different abilities on each side. Cubes can change colour,
+size and bosses can dissasemble into tetrahedra (triangles in 2D). Dr X's will
+be final boss. Every level is build solely from cubes (can be extended to spheres, \dots)
+and they can react on player actions, e.g. cube shrinks every time player touches it.
+
+\section{Technology}
+Programming language used is C++ as it is one of the goals of this project to practice
+this particular language. Initially, OpenGL is used to render cubes on screen, however
+it should be possible to replace it with ray tracing methods if desired.
+GLFW will provide low overhead OpenGL context.
+
+OpenGL version can be either set on 4.4 or 3.3, this will be decided before embarking
+on coding. Also, the ES version can be considered to ease portability to mobile devices.
+
+Public github repository is used to track code changes.
+
+\section{Design}
+Game will have main loop with three main stages {\em input handling}, {\em physics},
+{\em rendering}.
+
+\subsection{Input Handling}
+This stage should correctly capture key press and mouse clicks and update properties
+of objects acted on.
+
+\subsection{Physics}
+Update position of every object by adding small step. Handling of variable framerate
+was not discussed, for start, the framerate is fixed on 60 FPS.
+
+\subsection{Rendering}
+Last stage of main loop where visibility is tested and object are rendered on screen.
+
+
+\section{Iteration 0}
+Basic game mechanics should be implemented. This includes key capture, side movement
+of cube on plane and rendering.
+
+
+\end{document}
