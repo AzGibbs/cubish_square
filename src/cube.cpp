@@ -1,4 +1,4 @@
-#include "Cube.hpp"
+#include "cube.hpp"
 
 Cube::Cube(const float x, const float y, const float size)
 {   
