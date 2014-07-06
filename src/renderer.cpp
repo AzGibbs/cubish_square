@@ -98,9 +98,9 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
         for (unsigned j = 0; j < 6; ++j)
             indices[6 * i + j] = cube_template[j] + 4 * i;
     }
-    
 
 
+ 
     /* print VBO */
     for (unsigned i = 0; i < cubes.size(); ++i) {
         const Cube *c = static_cast<const Cube *>(vbo_mapped) + i;

@@ -9,7 +9,7 @@
 #include "input.hpp"
 #include "renderer.hpp"
 #include "updatecubestate.hpp"
-
+#include "vec.hpp"
 
 static void error_callback(int error, const char *desc)
 {
@@ -76,12 +76,17 @@ int main(void)
     Input input = Input();
     glfwSetWindowUserPointer(window, (void *)&input);
     glfwSetKeyCallback(window, get_key_callback); 
-
+    
+    vec4<float> test1 = vec4<float>(1.0f, 2.0f, 5.5f, 1.0f);
+    std::cout<<test1.x<<' '<<test1.y<<' '<<test1.z<<std::endl;
+    vec4<float> test2 = vec4<float>(1.0f, -4.0f, 7.0f, 1.0f);
+    test1 - test2;
+    std::cout<<test1.x<<' '<<test1.y<<' '<<test1.z<<std::endl;
     while (!glfwWindowShouldClose(window)) {
         update_master_state(cubes, input.return_key());
         renderer.draw(cubes);        
 
-        std::cout << input.return_key() << std::endl; 
+    //    std::cout << input.return_key() << std::endl; 
 
         glfwSwapBuffers(window);
         glfwPollEvents();
