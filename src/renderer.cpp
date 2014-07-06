@@ -110,10 +110,11 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
     static GLuint cube_template[6] = {0, 1, 2, 0, 2, 3};
 
     /* construct cube's triangles */
-    GLdouble *vertices = static_cast<GLdouble *>(vbo_mapped);
+    dvec4 *vertices = static_cast<dvec4 *>(vbo_mapped);
     GLuint *indices = static_cast<GLuint *>(ebo_mapped);
     for (unsigned i = 0; i < cubes.size(); ++i) {
-        std::copy(&cubes[i].points[0][0], &cubes[i].points[4][4], vertices + 16 * i);
+        std::copy(&cubes[i].points[0], &cubes[i].points[4],
+                  vertices + 4 * i);
         
         for (unsigned j = 0; j < 6; ++j)
             indices[6 * i + j] = cube_template[j] + 4 * i;

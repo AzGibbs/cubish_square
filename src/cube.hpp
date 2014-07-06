@@ -1,13 +1,15 @@
 #ifndef CUBE_HPP
 #define CUBE_HPP
 
+#include "vec.hpp"
+
 class Cube {
 public:
     Cube(const double x, const double y, const double z, const double size);
     ~Cube();
 
-    double points[4][4];
-    double velocity[4];
+    dvec4 points[4];
+    dvec4 velocity;
 };
 
 #endif
