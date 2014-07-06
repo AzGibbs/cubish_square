@@ -7,6 +7,7 @@
 
 #include "cube.hpp"
 #include "input.hpp"
+#include "physics.hpp"
 #include "renderer.hpp"
 #include "updatecubestate.hpp"
 #include "vec.hpp"
@@ -65,10 +66,10 @@ int main(void)
     }
    
     /* general initialization code */ 
-    const Cube cube1 = Cube(0.0f, 0.0f, 0.0f, 10.0f);
-    const Cube cube2 = Cube(0.0f, 10.0f, 0.0f, 20.0f);
-    const Cube cube3 = Cube(20.0f, 0.0f, 0.0f, 10.0f);
-    const Cube cube4 = Cube(30.0f, 30.0f, 0.0f, 50.0f);
+    const Cube cube1 = Cube(0.0, 0.0, 0.0, 10.0);
+    const Cube cube2 = Cube(0.0, 10.0, 0.0, 20.0);
+    const Cube cube3 = Cube(20.0, 0.0, 0.0, 10.0);
+    const Cube cube4 = Cube(30.0, 30.0, 0.0, 50.0);
     std::vector<Cube> cubes = {cube1, cube2, cube3, cube4};
 
     Renderer renderer(width, height); 
@@ -84,7 +85,10 @@ int main(void)
     std::cout<<test1.x<<' '<<test1.y<<' '<<test1.z<<std::endl;
     while (!glfwWindowShouldClose(window)) {
         update_master_state(cubes, input.return_key());
-        renderer.draw(cubes);        
+        
+        physics_update(cubes);
+
+        renderer.draw(cubes);
 
     //    std::cout << input.return_key() << std::endl; 
 

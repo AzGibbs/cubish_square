@@ -35,7 +35,7 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     const GLbitfield flags = GL_MAP_WRITE_BIT |
                              GL_MAP_PERSISTENT_BIT |
                              GL_MAP_COHERENT_BIT;
-    const size_t vbo_size = max_vertices * 3 * sizeof(GLfloat);
+    const size_t vbo_size = max_vertices * 3 * sizeof(GLdouble);
     const size_t ebo_size = max_vertices * sizeof(GLuint);
     
 
@@ -55,7 +55,7 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+    glVertexAttribLPointer(0, 4, GL_DOUBLE, 4 * sizeof(GLdouble), 0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 
@@ -72,13 +72,32 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     
     glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vert_prog);
     glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, frag_prog);
+
+    /* set up uniforms */
+    mvp.view = {
+        2.0 / width, 0.0, 0.0, 0.0,
+        0.0, 2.0 / height, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        -1.0, -1.0, 0.0, 1.0,
+    }; 
+
+    glGenBuffers(1, &ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glBufferStorage(GL_UNIFORM_BUFFER, sizeof(mvp), &mvp, GL_DYNAMIC_STORAGE_BIT);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    
+    glUniformBlockBinding(vert_prog, glGetUniformBlockIndex(vert_prog, "MVP"), 0);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, sizeof(mvp));
 }
 
 
 Renderer::~Renderer()
 {
     glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
     glDeleteVertexArrays(1, &vao);
+
+    glDeleteBuffers(1, &ubo);
 
     glDeleteProgram(vert_prog);
     glDeleteProgram(frag_prog);
@@ -90,7 +109,8 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
 {
     static GLuint cube_template[6] = {0, 1, 2, 0, 2, 3};
 
-    GLfloat *vertices = static_cast<GLfloat *>(vbo_mapped);
+    /* construct cube's triangles */
+    GLdouble *vertices = static_cast<GLdouble *>(vbo_mapped);
     GLuint *indices = static_cast<GLuint *>(ebo_mapped);
     for (unsigned i = 0; i < cubes.size(); ++i) {
         std::copy(&cubes[i].points[0][0], &cubes[i].points[4][4], vertices + 16 * i);
@@ -99,8 +119,7 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
             indices[6 * i + j] = cube_template[j] + 4 * i;
     }
 
-
- 
+#ifdef DEBUG
     /* print VBO */
     for (unsigned i = 0; i < cubes.size(); ++i) {
         const Cube *c = static_cast<const Cube *>(vbo_mapped) + i;
@@ -116,6 +135,7 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
             std::cout << indices[6 * i + j] << ", ";
         std::cout << std::endl;
     }
+#endif
 
     /* shader testing code
     static const GLfloat square[][4] = {

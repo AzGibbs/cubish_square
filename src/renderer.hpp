@@ -5,6 +5,11 @@
 #include <GL/glew.h>
 #include "cube.hpp"
 
+struct MVP {
+    GLdouble model[16];
+    GLdouble view[16];
+    GLdouble projection[16];
+};
 
 class Renderer {
 public:
@@ -17,12 +22,15 @@ private:
     const int width;
     const int height;
 
+    struct MVP mvp;
+
     GLuint vert_prog;
     GLuint frag_prog;
     GLuint pipeline;
     GLuint vbo;
     GLuint ebo;
     GLuint vao;
+    GLuint ubo;
 
     void *vbo_mapped;
     void *ebo_mapped;
