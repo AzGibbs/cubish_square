@@ -7,6 +7,7 @@
 
 #include "cube.hpp"
 #include "input.hpp"
+#include "physics.hpp"
 #include "renderer.hpp"
 #include "updatecubestate.hpp"
 
@@ -79,7 +80,10 @@ int main(void)
 
     while (!glfwWindowShouldClose(window)) {
         update_master_state(cubes, input.return_key());
-        renderer.draw(cubes);        
+        
+        physics_update(cubes);
+
+        renderer.draw(cubes);
 
         std::cout << input.return_key() << std::endl; 
 
