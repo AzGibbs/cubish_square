@@ -8,6 +8,7 @@
 #include "cube.hpp"
 #include "input.hpp"
 #include "renderer.hpp"
+#include "updatecubestate.hpp"
 
 
 static void error_callback(int error, const char *desc)
@@ -68,7 +69,7 @@ int main(void)
     const Cube cube2 = Cube(0.0f, 10.0f, 0.0f, 20.0f);
     const Cube cube3 = Cube(20.0f, 0.0f, 0.0f, 10.0f);
     const Cube cube4 = Cube(30.0f, 30.0f, 0.0f, 50.0f);
-    const std::vector<Cube> cubes = {cube1, cube2, cube3, cube4};
+    std::vector<Cube> cubes = {cube1, cube2, cube3, cube4};
 
     Renderer renderer(width, height); 
     
@@ -77,6 +78,7 @@ int main(void)
     glfwSetKeyCallback(window, get_key_callback); 
 
     while (!glfwWindowShouldClose(window)) {
+        update_master_state(cubes, input.return_key());
         renderer.draw(cubes);        
 
         std::cout << input.return_key() << std::endl; 
