@@ -7,6 +7,7 @@ public:
     ~Cube();
 
     double points[4][4];
+    double velocity[4];
 };
 
 #endif

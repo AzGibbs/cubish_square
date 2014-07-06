@@ -8,8 +8,9 @@ Cube::Cube(const double x, const double y, const double z, const double size)
     points[1] = {x + size, y, 0.0, 1.0};
     points[2] = {x + size, y + size, 0.0, 1.0};
     points[3] = {x, y + size, 0.0, 1.0};
-}
 
+    velocity = {0.0, 0.0, 0.0, 0.0};
+} 
 
 Cube::~Cube()
 {
