@@ -3,10 +3,10 @@
 
 class Cube {
 public:
-    Cube(const float x, const float y, const float z, const float size);
+    Cube(const double x, const double y, const double z, const double size);
     ~Cube();
 
-    float points[4][4];
+    double points[4][4];
 };
 
 #endif
