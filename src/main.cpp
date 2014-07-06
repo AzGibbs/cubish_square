@@ -12,6 +12,17 @@
 #include "updatecubestate.hpp"
 #include "vec.hpp"
 
+#ifdef DEBUG
+#define TIME(func, msg)\
+{\
+    const double start = glfwGetTime();\
+    (func);\
+    std::cout << (msg) << ": " << std::fixed << (glfwGetTime() - start) << std::endl;\
+}
+#else
+#define TIME(func, msg) (func)
+#endif
+
 static void error_callback(int error, const char *desc)
 {
     std::cerr << desc << std::endl;
@@ -66,31 +77,24 @@ int main(void)
     }
    
     /* general initialization code */ 
-    const Cube cube1 = Cube(0.0, 0.0, 0.0, 10.0);
-    const Cube cube2 = Cube(0.0, 10.0, 0.0, 20.0);
-    const Cube cube3 = Cube(20.0, 0.0, 0.0, 10.0);
-    const Cube cube4 = Cube(30.0, 30.0, 0.0, 50.0);
-    std::vector<Cube> cubes = {cube1, cube2, cube3, cube4};
+    const Cube cube1{0.0, 0.0, 0.0, 10.0};
+    const Cube cube2{0.0, 10.0, 0.0, 20.0};
+    const Cube cube3{20.0, 0.0, 0.0, 10.0};
+    const Cube cube4{30.0, 30.0, 0.0, 50.0};
+    std::vector<Cube> cubes{cube1, cube2, cube3, cube4};
 
-    Renderer renderer(width, height); 
+    Renderer renderer{width, height}; 
     
-    Input input = Input();
+    Input input{};
     glfwSetWindowUserPointer(window, (void *)&input);
     glfwSetKeyCallback(window, get_key_callback); 
     
-    vec4<float> test1 = vec4<float>(1.0f, 2.0f, 5.5f, 1.0f);
-    std::cout<<test1.x<<' '<<test1.y<<' '<<test1.z<<std::endl;
-    vec4<float> test2 = vec4<float>(1.0f, -4.0f, 7.0f, 1.0f);
-    test1 - test2;
-    std::cout<<test1.x<<' '<<test1.y<<' '<<test1.z<<std::endl;
     while (!glfwWindowShouldClose(window)) {
-        update_master_state(cubes, input.return_key());
+        TIME(update_master_state(cubes, input.return_key()), "Processing keys");
         
-        physics_update(cubes);
+        TIME(physics_update(cubes), "Processing physics");
 
-        renderer.draw(cubes);
-
-    //    std::cout << input.return_key() << std::endl; 
+        TIME((renderer.draw(cubes), glFinish()), "Rendering");
 
         glfwSwapBuffers(window);
         glfwPollEvents();

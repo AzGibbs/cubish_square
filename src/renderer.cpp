@@ -26,17 +26,17 @@ void gl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity,
 }
 
 
-Renderer::Renderer(const int width, const int height) : width(width), height(height)
+Renderer::Renderer(const int width, const int height) : width(width), height(height), mvp{}
 {
     glDebugMessageCallback(gl_debug_callback, NULL);
 
-    const int max_vertices = 100;
+    const int max_vertices {100};
 
-    const GLbitfield flags = GL_MAP_WRITE_BIT |
-                             GL_MAP_PERSISTENT_BIT |
-                             GL_MAP_COHERENT_BIT;
-    const size_t vbo_size = max_vertices * 3 * sizeof(GLdouble);
-    const size_t ebo_size = max_vertices * sizeof(GLuint);
+    const GLbitfield flags {GL_MAP_WRITE_BIT |
+                            GL_MAP_PERSISTENT_BIT |
+                            GL_MAP_COHERENT_BIT};
+    const size_t vbo_size {max_vertices * 3 * sizeof(GLdouble)};
+    const size_t ebo_size {max_vertices * sizeof(GLuint)};
     
 
     glGenBuffers(1, &vbo);
@@ -74,12 +74,10 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, frag_prog);
 
     /* set up uniforms */
-    mvp.view = {
-        2.0 / width, 0.0, 0.0, 0.0,
-        0.0, 2.0 / height, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        -1.0, -1.0, 0.0, 1.0,
-    }; 
+    mvp.view = {2.0 / width, 0.0, 0.0, 0.0,
+                0.0, 2.0 / height, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                -1.0, -1.0, 0.0, 1.0,}; 
 
     glGenBuffers(1, &ubo);
     glBindBuffer(GL_UNIFORM_BUFFER, ubo);
@@ -107,7 +105,7 @@ Renderer::~Renderer()
 
 void Renderer::draw(const std::vector<Cube> &cubes) const
 {
-    static GLuint cube_template[6] = {0, 1, 2, 0, 2, 3};
+    static GLuint cube_template[6] {0, 1, 2, 0, 2, 3};
 
     /* construct cube's triangles */
     dvec4 *vertices = static_cast<dvec4 *>(vbo_mapped);
@@ -117,10 +115,10 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
                   vertices + 4 * i);
         
         for (unsigned j = 0; j < 6; ++j)
-            indices[6 * i + j] = cube_template[j] + 4 * i;
+            indices[6 * i + j] = {cube_template[j] + 4 * i};
     }
 
-#ifdef DEBUG
+#ifdef DEBUG_RENDERER
     /* print VBO */
     for (unsigned i = 0; i < cubes.size(); ++i) {
         const Cube *c = static_cast<const Cube *>(vbo_mapped) + i;

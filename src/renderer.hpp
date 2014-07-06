@@ -3,13 +3,17 @@
 
 #include <vector>
 #include <GL/glew.h>
+
 #include "cube.hpp"
+#include "mat.hpp"
+
 
 struct MVP {
-    GLdouble model[16];
-    GLdouble view[16];
-    GLdouble projection[16];
+    dmat4 model;
+    dmat4 view;
+    dmat4 projection;
 };
+
 
 class Renderer {
 public:
