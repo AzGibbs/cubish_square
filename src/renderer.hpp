@@ -21,9 +21,11 @@ private:
     GLuint frag_prog;
     GLuint pipeline;
     GLuint vbo;
+    GLuint ebo;
     GLuint vao;
 
     void *vbo_mapped;
+    void *ebo_mapped;
 };
 
 #endif

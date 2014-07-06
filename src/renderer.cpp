@@ -36,6 +36,7 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
                              GL_MAP_PERSISTENT_BIT |
                              GL_MAP_COHERENT_BIT;
     const size_t vbo_size = max_vertices * 3 * sizeof(GLfloat);
+    const size_t ebo_size = max_vertices * sizeof(GLuint);
     
 
     glGenBuffers(1, &vbo);
@@ -44,9 +45,16 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     vbo_mapped = glMapBufferRange(GL_ARRAY_BUFFER, 0, vbo_size, flags);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, ebo_size, NULL, flags);
+    ebo_mapped = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0 , ebo_size, flags);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
@@ -80,9 +88,36 @@ Renderer::~Renderer()
 
 void Renderer::draw(const std::vector<Cube> &cubes) const
 {
-    /* copy cubes to video card */
-    std::copy(cubes.cbegin(), cubes.end(), (Cube *)vbo_mapped);
+    static GLuint cube_template[6] = {0, 1, 2, 0, 2, 3};
 
+    GLfloat *vertices = static_cast<GLfloat *>(vbo_mapped);
+    GLuint *indices = static_cast<GLuint *>(ebo_mapped);
+    for (unsigned i = 0; i < cubes.size(); ++i) {
+        std::copy(&cubes[i].points[0][0], &cubes[i].points[4][4], vertices + 16 * i);
+        
+        for (unsigned j = 0; j < 6; ++j)
+            indices[6 * i + j] = cube_template[j] + 4 * i;
+    }
+    
+
+
+    /* print VBO */
+    for (unsigned i = 0; i < cubes.size(); ++i) {
+        const Cube *c = static_cast<const Cube *>(vbo_mapped) + i;
+        for (int j = 0; j < 4; ++j)
+            std::cout << c->points[j][0] << ", " << c->points[j][1] << ", "
+                      << c->points[j][2] << ", " << c->points[j][3] << std::endl;
+        std::cout << std::endl;
+    }
+
+    /* print EBO */
+    for (unsigned i = 0; i < cubes.size(); ++i) {
+        for (int j = 0; j < 6; ++j)
+            std::cout << indices[6 * i + j] << ", ";
+        std::cout << std::endl;
+    }
+
+    /* shader testing code
     static const GLfloat square[][4] = {
         {-1, -1, 0, 1},
         {1, -1, 0, 1},
@@ -91,13 +126,13 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
         {1, 1, 0, 1},
         {-1, 1, 0, 1},
     };
-
     std::copy(&square[0][0], &square[0][0] + 4 * 6, (GLfloat *)vbo_mapped);
+    */
 
     /* draw cubes */
     glBindProgramPipeline(pipeline);
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawElements(GL_TRIANGLES, 6 * cubes.size(), GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
     glBindProgramPipeline(0);
 }

@@ -8,6 +8,6 @@ out gl_PerVertex {
 
 void main(void)
 {
-    //const mat4 scale = mat4(2/800, 0, 0, 0, 0, 2/600, 0, 0, 0, 0, 1, 0, -1.0, -1.0, 0.0, 1.0);
-    gl_Position = scale * v_pos;
+    const mat4 view = mat4(1.0 / 400.0, 0, 0, 0, 0, 1.0 / 300.0, 0, 0, 0, 0, 1.0, 0, -1.0, -1.0, 0.0, 1.0);
+    gl_Position = view * v_pos;
 }
