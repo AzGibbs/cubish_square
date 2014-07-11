@@ -74,8 +74,8 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, frag_prog);
 
     /* set up uniforms */
-    mvp.view = {2.0 / width, 0.0, 0.0, 0.0,
-                0.0, 2.0 / height, 0.0, 0.0,
+    mvp.view = {20.0 / width, 0.0, 0.0, 0.0,
+                0.0, 20.0 / height, 0.0, 0.0,
                 0.0, 0.0, 1.0, 0.0,
                 -1.0, -1.0, 0.0, 1.0,}; 
 

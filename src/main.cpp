@@ -77,10 +77,10 @@ int main(void)
     }
    
     /* general initialization code */ 
-    const Cube cube1{0.0, 0.0, 0.0, 10.0};
-    const Cube cube2{0.0, 10.0, 0.0, 20.0};
-    const Cube cube3{20.0, 0.0, 0.0, 10.0};
-    const Cube cube4{30.0, 30.0, 0.0, 50.0};
+    const Cube cube1{0.0, 0.0, 0.0, 1.0};
+    const Cube cube2{0.0, 1.0, 0.0, 2.0};
+    const Cube cube3{2.0, 0.0, 0.0, 1.0};
+    const Cube cube4{3.0, 3.0, 0.0, 5.0};
     std::vector<Cube> cubes{cube1, cube2, cube3, cube4};
 
     Renderer renderer{width, height}; 
@@ -93,6 +93,8 @@ int main(void)
         TIME(update_master_state(cubes, input.return_key()), "Processing keys");
         
         TIME(physics_update(cubes), "Processing physics");
+
+        glClear(GL_COLOR_BUFFER_BIT);
 
         TIME((renderer.draw(cubes), glFinish()), "Rendering");
 

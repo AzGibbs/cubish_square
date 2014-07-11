@@ -2,7 +2,7 @@
 
 void update_master_state(std::vector<Cube> &cubes, const KEY key)
 {   
-    dvec4 velocity{};
+    dvec4 velocity {};
 
     switch(key) {
     case LEFT:
