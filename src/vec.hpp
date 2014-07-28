@@ -7,20 +7,30 @@ struct vec4 {
 
     vec4() : x{}, y{}, z{}, w{} {};
     vec4(const T x, const T y, const T z, const T w) : x{x}, y{y}, z{z}, w{w} {};
-/*
-    T operator+(vec4<T> addition)
+
+    vec4<T> operator+=(const vec4<T> &v)
     {
-        x += addition.x;
-        y += addition.y;
-        z += addition.z;
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        return *this;
     }
     
-    T operator-(vec4<T> subtraction)
+    vec4<T> & operator-=(const vec4<T> &v)
     {
-        x -= subtraction.x;
-        y -= subtraction.y;
-        z -= subtraction.z;
-    }*/
+        x -= v.x;
+        y -= v.y;
+        z -= v.z;
+        return *this;
+    }
+
+    vec4<T> & operator*=(const double s)
+    {
+        x *= s;
+        y *= s;
+        z *= s;
+        return *this;
+    }
 };
 
 template <typename T>
@@ -35,6 +45,6 @@ vec4<T> operator+(const vec4<T> &v0, const vec4<T> &v1)
     return {v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w};
 }
 
-typedef vec4<double> dvec4;
+using dvec4 = vec4<double>;
 
 #endif

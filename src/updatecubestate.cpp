@@ -6,20 +6,20 @@ void update_master_state(std::vector<Cube> &cubes, const KEY key)
 
     switch(key) {
     case LEFT:
-        velocity.x = {-1.0};
+        velocity.x = {-0.1};
         break;
     case RIGHT:
-        velocity.x = {1.0};
+        velocity.x = {0.1};
         break;
     case UP:
-        velocity.y = {1.0};
+        velocity.y = {0.1};
         break;
     case DOWN:
-        velocity.y = {-1.0};
+        velocity.y = {-0.1};
         break;
     case NONE:
         break;
     }   
 
-    cubes[0].velocity = {velocity};
+    cubes[0].velocity += {velocity};
 }
