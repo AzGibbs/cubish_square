@@ -7,8 +7,8 @@ void physics_update(std::vector<Cube> &cubes)
     const double air_resistance = 0.8; /* 0.2 air resistance */
 
     for (Cube &c : cubes) {
-//        c.velocity *= air_resistance;
-        std::cout << "velocity " << c.velocity.y << std::endl;
+        c.velocity *= air_resistance;
+   //     std::cout << "velocity " << c.velocity.y << std::endl;
         c.velocity -= gravity;
 
         /* update position */
@@ -22,13 +22,13 @@ void physics_update(std::vector<Cube> &cubes)
             lowest_y = std::min(lowest_y, c.points[i].y);
 
         if (lowest_y <= 0.0) {
-            std::cout << lowest_y << std::endl;
+ //           std::cout << lowest_y << std::endl;
 //            c.velocity.y += lowest_y;
             c.velocity.y *= -1.0;
-            c.velocity += gravity;
- /*           for (int i = 0; i < 4; ++i)
-                c.points[i].y -= lowest_y;*/
+ //           c.velocity += gravity;
+            for (int i = 0; i < 4; ++i)
+                c.points[i].y -= lowest_y;
         }
-        std::cout << std::endl;
+     //   std::cout << std::endl;
     }
 }

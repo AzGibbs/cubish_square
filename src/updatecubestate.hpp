@@ -7,6 +7,6 @@
 #include "cube.hpp"
 #include "input.hpp"
 
-void update_master_state(std::vector<Cube> &cubes, const KEY key);
+void update_master_state(std::vector<Cube> &cubes, const struct Input::PrimeKeys &prime_keys);
 
 #endif
