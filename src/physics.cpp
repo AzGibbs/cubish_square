@@ -1,4 +1,5 @@
 #include "physics.hpp"
+#include <iostream>
 
 void physics_update(std::vector<Cube> &cubes)
 {
@@ -6,7 +7,8 @@ void physics_update(std::vector<Cube> &cubes)
     const double air_resistance = 0.8; /* 0.2 air resistance */
 
     for (Cube &c : cubes) {
-        c.velocity *= air_resistance;
+//        c.velocity *= air_resistance;
+        std::cout << "velocity " << c.velocity.y << std::endl;
         c.velocity -= gravity;
 
         /* update position */
@@ -19,10 +21,14 @@ void physics_update(std::vector<Cube> &cubes)
         for (int i = 1; i < 4; ++i)
             lowest_y = std::min(lowest_y, c.points[i].y);
 
-        if (lowest_y < 0.0) {
-            c.velocity.y = 0.0;
-            for (int i = 0; i < 4; ++i)
-                c.points[i].y += 0.0 - lowest_y; 
+        if (lowest_y <= 0.0) {
+            std::cout << lowest_y << std::endl;
+//            c.velocity.y += lowest_y;
+            c.velocity.y *= -1.0;
+            c.velocity += gravity;
+ /*           for (int i = 0; i < 4; ++i)
+                c.points[i].y -= lowest_y;*/
         }
+        std::cout << std::endl;
     }
 }

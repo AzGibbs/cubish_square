@@ -81,7 +81,7 @@ int main(void)
     const Cube cube2{0.0, 1.0, 0.0, 2.0};
     const Cube cube3{2.0, 0.0, 0.0, 1.0};
     const Cube cube4{10.0, 25.0, 0.0, 5.0};
-    std::vector<Cube> cubes{cube1, cube2, cube3, cube4};
+    std::vector<Cube> cubes{/*cube1, cube2, cube3, */cube4};
 
     Renderer renderer{width, height}; 
     

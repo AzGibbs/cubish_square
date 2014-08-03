@@ -1,8 +1,8 @@
-CXX = g++
-CXXFLAGS = -g -std=c++0x -Wall
-INCLUDES = -I$(HOME)/usr/include
-LDFLAGS = -L$(HOME)/usr/lib -L$(HOME)/usr/lib64
-LIBS = -lGL -lglfw3 -lGLEW -lm -lXrandr
+CXX = /usr/not-backed-up/gcc-build/bin/g++
+CXXFLAGS = -g -std=c++11 -Wall -fstrict-aliasing
+INCLUDES = 
+LDFLAGS = 
+LIBS = -lGL -lGLEW -lm -lXrandr `pkg-config glfw3 --libs`
 SOURCES = cube.cpp input.cpp main.cpp physics.cpp renderer.cpp updatecubestate.cpp
 OBJECTS = $(patsubst %.cpp, tmp/%.o, $(SOURCES))
 
