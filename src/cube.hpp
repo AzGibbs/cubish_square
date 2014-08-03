@@ -10,6 +10,7 @@ public:
 
     dvec4 points[4];
     dvec4 velocity;
+    dvec4 acceleration;
 };
 
 #endif

@@ -45,6 +45,12 @@ vec4<T> operator+(const vec4<T> &v0, const vec4<T> &v1)
     return {v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w};
 }
 
+template <typename T>
+vec4<T> operator*(const double s, const vec4<T> &v)
+{
+    return {s * v.x, s * v.y, s * v.z, s * v.w};
+}
+
 using dvec4 = vec4<double>;
 
 #endif

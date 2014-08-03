@@ -5,6 +5,6 @@
 
 #include "cube.hpp"
 
-void physics_update(std::vector<Cube> &cubes);
+void physics_update(std::vector<Cube> &cubes, const double timestep);
 
 #endif
