@@ -20,7 +20,7 @@ void physics_update(std::vector<Cube> &cubes, const double timestep)
     /* compute collisions */
     for (Cube &c : cubes) {       
         /* detect collision with objects */
-        for (const Cube &other_c : cubes) {
+/*        for (const Cube &other_c : cubes) {
             if (&c == &other_c)
                 continue;
 
@@ -29,7 +29,7 @@ void physics_update(std::vector<Cube> &cubes, const double timestep)
                 c.points[i] = c.points[i]
             }
         }
-
+*/
         /* detect collision with ground */
         double lowest_y = c.points[0].y;
         for (int i = 1; i < 4; ++i)

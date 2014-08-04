@@ -13,6 +13,7 @@ struct vec4 {
         x += v.x;
         y += v.y;
         z += v.z;
+        w += v.w;
         return *this;
     }
     
@@ -21,6 +22,7 @@ struct vec4 {
         x -= v.x;
         y -= v.y;
         z -= v.z;
+        w -= v.w;
         return *this;
     }
 
@@ -29,6 +31,7 @@ struct vec4 {
         x *= s;
         y *= s;
         z *= s;
+        w *= s;
         return *this;
     }
 };

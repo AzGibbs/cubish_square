@@ -35,14 +35,20 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     const GLbitfield flags {GL_MAP_WRITE_BIT |
                             GL_MAP_PERSISTENT_BIT |
                             GL_MAP_COHERENT_BIT};
+    /* factor 3 comes from euler characteristic */
     const size_t vbo_size {max_vertices * 3 * sizeof(GLdouble)};
     const size_t ebo_size {max_vertices * sizeof(GLuint)};
-    
+    const size_t vbo_lines_size {10 * 4 * sizeof(GLdouble)};
 
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glGenBuffers(2, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferStorage(GL_ARRAY_BUFFER, vbo_size, NULL, flags);  
     vbo_mapped = glMapBufferRange(GL_ARRAY_BUFFER, 0, vbo_size, flags);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+    glBufferStorage(GL_ARRAY_BUFFER, vbo_lines_size, NULL, flags);
+    vbo_lines_mapped = glMapBufferRange(GL_ARRAY_BUFFER, 0, vbo_lines_size, flags);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glGenBuffers(1, &ebo);
@@ -51,10 +57,17 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     ebo_mapped = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0 , ebo_size, flags);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glGenVertexArrays(2, vao);
+    glBindVertexArray(vao[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glVertexAttribLPointer(0, 4, GL_DOUBLE, 4 * sizeof(GLdouble), 0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+    /* velocity VAO */
+    glBindVertexArray(vao[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glVertexAttribLPointer(0, 4, GL_DOUBLE, 4 * sizeof(GLdouble), 0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
@@ -62,44 +75,54 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     /* pass through shaders */
     const std::string vert_data = read_file("data/main.vert");
     const char *vert_data_ptr = vert_data.c_str();
-    vert_prog = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vert_data_ptr);
+    vert_prog[0] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vert_data_ptr);
 
     const std::string frag_data = read_file("data/main.frag");
     const char *frag_data_ptr = frag_data.c_str();
-    frag_prog = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &frag_data_ptr);
+    frag_prog[0] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &frag_data_ptr);
 
-    glGenProgramPipelines(1, &pipeline);
+    glGenProgramPipelines(2, pipeline);
     
-    glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vert_prog);
-    glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, frag_prog);
+    glUseProgramStages(pipeline[0], GL_VERTEX_SHADER_BIT, vert_prog[0]);
+    glUseProgramStages(pipeline[0], GL_FRAGMENT_SHADER_BIT, frag_prog[0]);
+
+    /* debug arrows shaders */
+    const std::string frag_velocity = read_file("data/velocity.frag");
+    const char *frag_velocity_ptr = frag_velocity.c_str();
+    frag_prog[1] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &frag_velocity_ptr);
+
+    glUseProgramStages(pipeline[1], GL_VERTEX_SHADER_BIT, vert_prog[0]);
+    glUseProgramStages(pipeline[1], GL_FRAGMENT_SHADER_BIT, frag_prog[1]);
+    
 
     /* set up uniforms */
     mvp.view = {20.0 / width, 0.0, 0.0, 0.0,
                 0.0, 20.0 / height, 0.0, 0.0,
                 0.0, 0.0, 1.0, 0.0,
-                -1.0, -1.0, 0.0, 1.0,}; 
+                -1.0, -1.0, 0.0, 1.0}; 
 
     glGenBuffers(1, &ubo);
     glBindBuffer(GL_UNIFORM_BUFFER, ubo);
     glBufferStorage(GL_UNIFORM_BUFFER, sizeof(mvp), &mvp, GL_DYNAMIC_STORAGE_BIT);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
-    glUniformBlockBinding(vert_prog, glGetUniformBlockIndex(vert_prog, "MVP"), 0);
+    glUniformBlockBinding(vert_prog[0], glGetUniformBlockIndex(vert_prog[0], "MVP"), 0);
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, sizeof(mvp));
 }
 
 
 Renderer::~Renderer()
 {
-    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(2, vbo);
     glDeleteBuffers(1, &ebo);
-    glDeleteVertexArrays(1, &vao);
+    glDeleteVertexArrays(2, vao);
 
     glDeleteBuffers(1, &ubo);
 
-    glDeleteProgram(vert_prog);
-    glDeleteProgram(frag_prog);
-    glDeleteProgramPipelines(1, &pipeline); 
+    glDeleteProgram(vert_prog[0]);
+    glDeleteProgram(frag_prog[0]);
+    glDeleteProgram(frag_prog[1]);
+    glDeleteProgramPipelines(2, pipeline); 
 }
 
 
@@ -118,13 +141,27 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
             indices[6 * i + j] = {cube_template[j] + 4 * i};
     }
 
+    /* construct velocity vectors */
+    for (unsigned i = 0; i < cubes.size(); ++i) {
+        dvec4 centroid {0.0, 0.0, 0.0, 0.0};
+        /* compute centroid */
+        for (int j = 0; j < 4; ++j)
+            centroid += 0.25 * cubes[i].points[j];
+
+        dvec4 *lines = static_cast<dvec4 *>(vbo_lines_mapped);
+        lines[2 * i] = centroid;
+        lines[2 * i + 1] = centroid + cubes[i].velocity;
+    }
+
+
 #ifdef DEBUG_RENDERER
+    /* TODO this now does not work */
     /* print VBO */
     for (unsigned i = 0; i < cubes.size(); ++i) {
-        const Cube *c = static_cast<const Cube *>(vbo_mapped) + i;
+        const dvec4 *points = static_cast<const dvec4 *>(vbo_mapped) + i;
         for (int j = 0; j < 4; ++j)
-            std::cout << c->points[j][0] << ", " << c->points[j][1] << ", "
-                      << c->points[j][2] << ", " << c->points[j][3] << std::endl;
+            std::cout << points[4 * i + j].x << ", " << points[4 * i + j].y << ", "
+                      << points[4 * i + j].z << ", " << points[4 * i + j].w << std::endl;
         std::cout << std::endl;
     }
 
@@ -133,6 +170,14 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
         for (int j = 0; j < 6; ++j)
             std::cout << indices[6 * i + j] << ", ";
         std::cout << std::endl;
+    }
+
+    for (unsigned i = 0; i < cubes.size(); ++i) {
+        dvec4 *lines = static_cast<dvec4 *>(vbo_lines_mapped);
+        std::cout << "line " << lines[2*i].x << " " << lines[2*i].y << " " << lines[2*i].z
+                  << " " << lines[2*i].w
+                  << ", " << lines[2*i + 1].x << " " << lines[2*i + 1].y << " "
+                  << lines[2*i + 1].z << " " << lines[2*i + 1].w << std::endl;
     }
 #endif
 
@@ -149,9 +194,15 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
     */
 
     /* draw cubes */
-    glBindProgramPipeline(pipeline);
-    glBindVertexArray(vao);
+    glBindProgramPipeline(pipeline[0]);
+    glBindVertexArray(vao[0]);
     glDrawElements(GL_TRIANGLES, 6 * cubes.size(), GL_UNSIGNED_INT, NULL);
+    glBindVertexArray(0);
+    glBindProgramPipeline(0);
+
+    glBindProgramPipeline(pipeline[1]);
+    glBindVertexArray(vao[1]);
+    glDrawArrays(GL_LINES, 0, 2 * cubes.size());
     glBindVertexArray(0);
     glBindProgramPipeline(0);
 }

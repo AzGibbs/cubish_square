@@ -1,25 +1,22 @@
 #include "updatecubestate.hpp"
 
-void update_master_state(std::vector<Cube> &cubes, const KEY key)
-{   
-    dvec4 velocity {};
+void update_master_state(std::vector<Cube> &cubes, const struct Input::PrimeKeys &prime_keys)
+{
+    dvec4 acceleration {0.0, 0.0, 0.0, 0.0};
 
-    switch(key) {
+    switch(prime_keys.h) {
     case LEFT:
-        velocity.x = {-0.1};
+        acceleration.x = {-10.0};
         break;
     case RIGHT:
-        velocity.x = {0.1};
+        acceleration.x = {10.0};
         break;
+    }
+    switch(prime_keys.v) {
     case UP:
-        velocity.y = {0.1};
+        acceleration.y = {50.0};
         break;
-    case DOWN:
-        velocity.y = {-0.1};
-        break;
-    case NONE:
-        break;
-    }   
+    }
 
-    cubes[0].velocity += {velocity};
+    cubes[0].acceleration = acceleration;
 }
