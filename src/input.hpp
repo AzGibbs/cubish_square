@@ -4,19 +4,20 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-enum KEY {NONE, LEFT, RIGHT, UP, DOWN};
-enum STATE {UNPRESSED, PRESSED};
+enum class Key {none, left, right, up, down};
+enum class State {unpressed, pressed};
 
 class Input {
-KEY pressed_key;
-struct {STATE left, right, up, down;} h_keys;
+Key pressed_key;
+struct {State left, right, up, down;} h_keys;
+
 public:
     Input();
     ~Input();
     
     void get_key_callback(int key, int scancode, int action, int mods);
     
-    struct PrimeKeys {KEY h, v;} prime_keys;
+    struct PrimeKeys {Key h, v;} prime_keys;
     struct PrimeKeys return_key();
 };
 

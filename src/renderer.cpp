@@ -36,9 +36,9 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
                             GL_MAP_PERSISTENT_BIT |
                             GL_MAP_COHERENT_BIT};
     /* factor 3 comes from euler characteristic */
-    const size_t vbo_size {max_vertices * 3 * sizeof(GLdouble)};
+    const size_t vbo_size {max_vertices * 3 * sizeof(GLfloat)};
     const size_t ebo_size {max_vertices * sizeof(GLuint)};
-    const size_t vbo_lines_size {10 * 4 * sizeof(GLdouble)};
+    const size_t vbo_lines_size {10 * 4 * sizeof(GLfloat)};
 
     glGenBuffers(2, vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
@@ -61,14 +61,14 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     glBindVertexArray(vao[0]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glVertexAttribLPointer(0, 4, GL_DOUBLE, 4 * sizeof(GLdouble), 0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 
     /* velocity VAO */
     glBindVertexArray(vao[1]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glVertexAttribLPointer(0, 4, GL_DOUBLE, 4 * sizeof(GLdouble), 0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 
@@ -96,10 +96,10 @@ Renderer::Renderer(const int width, const int height) : width(width), height(hei
     
 
     /* set up uniforms */
-    mvp.view = {20.0 / width, 0.0, 0.0, 0.0,
-                0.0, 20.0 / height, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                -1.0, -1.0, 0.0, 1.0}; 
+    mvp.view = {20.0f / width, 0.0f, 0.0f, 0.0f,
+                0.0f, 20.0f / height, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                -1.0f, -1.0f, 0.0f, 1.0f}; 
 
     glGenBuffers(1, &ubo);
     glBindBuffer(GL_UNIFORM_BUFFER, ubo);
@@ -131,11 +131,10 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
     static GLuint cube_template[6] {0, 1, 2, 0, 2, 3};
 
     /* construct cube's triangles */
-    dvec4 *vertices = static_cast<dvec4 *>(vbo_mapped);
+    vec4 *vertices = static_cast<vec4 *>(vbo_mapped);
     GLuint *indices = static_cast<GLuint *>(ebo_mapped);
     for (unsigned i = 0; i < cubes.size(); ++i) {
-        std::copy(&cubes[i].points[0], &cubes[i].points[4],
-                  vertices + 4 * i);
+        std::copy(&cubes[i].points[0], &cubes[i].points[4], vertices + 4*i);
         
         for (unsigned j = 0; j < 6; ++j)
             indices[6 * i + j] = {cube_template[j] + 4 * i};
@@ -143,14 +142,14 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
 
     /* construct velocity vectors */
     for (unsigned i = 0; i < cubes.size(); ++i) {
-        dvec4 centroid {0.0, 0.0, 0.0, 0.0};
+        vec4 centroid {0.0f, 0.0f, 0.0f, 0.0f};
         /* compute centroid */
         for (int j = 0; j < 4; ++j)
-            centroid += 0.25 * cubes[i].points[j];
+            centroid += 0.25f * cubes[i].points[j];
 
-        dvec4 *lines = static_cast<dvec4 *>(vbo_lines_mapped);
-        lines[2 * i] = centroid;
-        lines[2 * i + 1] = centroid + cubes[i].velocity;
+        vec4 *line = static_cast<vec4 *>(vbo_lines_mapped) + 2*i;
+        line[0] = centroid;
+        line[1] = centroid + cubes[i].velocity;
     }
 
 
@@ -158,7 +157,7 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
     /* TODO this now does not work */
     /* print VBO */
     for (unsigned i = 0; i < cubes.size(); ++i) {
-        const dvec4 *points = static_cast<const dvec4 *>(vbo_mapped) + i;
+        const vec4 *points = static_cast<const vec4 *>(vbo_mapped) + i;
         for (int j = 0; j < 4; ++j)
             std::cout << points[4 * i + j].x << ", " << points[4 * i + j].y << ", "
                       << points[4 * i + j].z << ", " << points[4 * i + j].w << std::endl;
@@ -173,7 +172,7 @@ void Renderer::draw(const std::vector<Cube> &cubes) const
     }
 
     for (unsigned i = 0; i < cubes.size(); ++i) {
-        dvec4 *lines = static_cast<dvec4 *>(vbo_lines_mapped);
+        vec4 *lines = static_cast<vec4 *>(vbo_lines_mapped);
         std::cout << "line " << lines[2*i].x << " " << lines[2*i].y << " " << lines[2*i].z
                   << " " << lines[2*i].w
                   << ", " << lines[2*i + 1].x << " " << lines[2*i + 1].y << " "

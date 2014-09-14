@@ -5,12 +5,12 @@
 
 class Cube {
 public:
-    Cube(const double x, const double y, const double z, const double size);
+    Cube(const float x, const float y, const float z, const float size);
     ~Cube();
 
-    dvec4 points[4];
-    dvec4 velocity;
-    dvec4 acceleration;
+    vec4 points[4];
+    vec4 velocity;
+    vec4 acceleration;
 };
 
 #endif

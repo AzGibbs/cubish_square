@@ -9,9 +9,9 @@
 
 
 struct MVP {
-    dmat4 model;
-    dmat4 view;
-    dmat4 projection;
+    mat4 model;
+    mat4 view;
+    mat4 projection;
 };
 
 

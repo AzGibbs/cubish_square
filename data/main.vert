@@ -1,11 +1,11 @@
-#version 440
+#version 330
 
-layout(location = 0) in dvec4 v_pos;
+layout(location = 0) in vec4 v_pos;
 
 layout(std140) uniform MVP {
-    dmat4 model;
-    dmat4 view;
-    dmat4 projection;
+    mat4 model;
+    mat4 view;
+    mat4 projection;
 };
 
 out gl_PerVertex {
@@ -15,5 +15,5 @@ out gl_PerVertex {
 
 void main(void)
 {
-    gl_Position = vec4(view * v_pos);
+    gl_Position = view * v_pos;
 }

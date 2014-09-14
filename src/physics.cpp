@@ -1,10 +1,10 @@
 #include "physics.hpp"
 #include <iostream>
 
-void physics_update(std::vector<Cube> &cubes, const double timestep)
+void physics_update(std::vector<Cube> &cubes, const float timestep)
 {
-    const dvec4 gravity {0.0, -9.81, 0.0, 0.0};
-    const double air_resistance = 0.95; /* 0.2 air resistance */
+    const vec4 gravity {0.0f, -9.81f, 0.0f, 0.0f};
+    const float air_resistance = 0.95f; /* 0.2 air resistance */
 
     /* update positions */
     for (Cube &c : cubes) {
@@ -31,7 +31,7 @@ void physics_update(std::vector<Cube> &cubes, const double timestep)
         }
 */
         /* detect collision with ground */
-        double lowest_y = c.points[0].y;
+        float lowest_y = c.points[0].y;
         for (int i = 1; i < 4; ++i)
             lowest_y = std::min(lowest_y, c.points[i].y);
 

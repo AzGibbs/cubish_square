@@ -1,20 +1,21 @@
 #include "updatecubestate.hpp"
 
-void update_master_state(std::vector<Cube> &cubes, const struct Input::PrimeKeys &prime_keys)
+void update_master_state(std::vector<Cube> &cubes,
+                         const struct Input::PrimeKeys &prime_keys)
 {
-    dvec4 acceleration {0.0, 0.0, 0.0, 0.0};
+    vec4 acceleration {};
 
     switch(prime_keys.h) {
-    case LEFT:
-        acceleration.x = {-10.0};
+    case Key::left:
+        acceleration.x = {-10.0f};
         break;
-    case RIGHT:
-        acceleration.x = {10.0};
+    case Key::right:
+        acceleration.x = {10.0f};
         break;
     }
     switch(prime_keys.v) {
-    case UP:
-        acceleration.y = {50.0};
+    case Key::up:
+        acceleration.y = {50.0f};
         break;
     }
 
